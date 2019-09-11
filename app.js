@@ -43,22 +43,22 @@ inquirer.prompt([{
             if (managerEntry.manPassword === process.env.managerPassword) {
                 console.log('Welcome To The Manager Portal');
                 inquirer.prompt([{
-                    type:'list',
-                    message:'What Action Do You Want To Perform?',
-                    choices:['View Products For Sale','View Low Inventory Items','Add Inventory','Add New Product'],
-                    name:'managerMenu'
-                }]).then(function(managerOption){
-                    let manFirstOption=managerOption.managerMenu;
-                    if(manFirstOption==='View Products For Sale'){
+                    type: 'list',
+                    message: 'What Action Do You Want To Perform?',
+                    choices: ['View Products For Sale', 'View Low Inventory Items', 'Add Inventory', 'Add New Product'],
+                    name: 'managerMenu'
+                }]).then(function (managerOption) {
+                    let manFirstOption = managerOption.managerMenu;
+                    if (manFirstOption === 'View Products For Sale') {
                         console.log('Products for Sale');
                     }
-                    else if(manFirstOption==='View Low Inventory Items'){
+                    else if (manFirstOption === 'View Low Inventory Items') {
                         console.log('Low Inventory');
                     }
-                    else if(manFirstOption==='Add Inventory'){
+                    else if (manFirstOption === 'Add Inventory') {
                         console.log('Add Inventory');
                     }
-                    else if(manFirstOption==='Add New Product'){
+                    else if (manFirstOption === 'Add New Product') {
                         console.log('Add New Products');
                     }
                 })
@@ -78,15 +78,15 @@ inquirer.prompt([{
             if (supEntry.supPassword === process.env.supervisorPassword) {
                 console.log('Welcome To The Supervisor Portal');
                 inquirer.prompt([{
-                    type:'list',
-                    choices:['View Products By Department','Create New Department'],
-                    message:'What Action Would You Like To Perform?',
-                    name:'supMenu'
-                }]).then(function(supMenuResponse){
-                    if(supMenuResponse.supMenu==='View Products By Department'){
+                    type: 'list',
+                    choices: ['View Products By Department', 'Create New Department'],
+                    message: 'What Action Would You Like To Perform?',
+                    name: 'supMenu'
+                }]).then(function (supMenuResponse) {
+                    if (supMenuResponse.supMenu === 'View Products By Department') {
                         console.log('Displaying Department Information');
                     }
-                    else{
+                    else {
                         console.log('Creating New Department');
                     }
                 })
