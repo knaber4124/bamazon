@@ -12,7 +12,7 @@ var connection = mysql.createConnection({
     user: "root",
 
     // Your password
-    password: "naber2010",
+    password: env.mySQLPassword,
     database: "bamazon_db"
 });
 connection.connect(function (err) {
@@ -47,21 +47,37 @@ function customerOptions() {
             startOver();
         }
         else {
-            inquirer.prompt([{
-                type: 'list',
-                message: 'What Would You Like To Buy?',
-                choices: ['item1', 'item2', 'item3', 'item4'],
-                name: 'product'
-            }]).then(function (productChoice) {
-                inquirer.prompt([{
-                    type: 'number',
-                    message: `How many of ${productChoice.product} would you like to buy?`,
-                    name: 'productQuantity'
-                }]).then(function (productPurchased) {
-                    console.log(`You have purchased ${productPurchased.productQuantity} of ${productChoice.product}`);
-                    startOver();
-                })
-            })
+            connection.query(
+                'SELECT * FROM products', function (err, results) {
+                    if (err) throw err;
+                    inquirer.prompt([{
+                        type: 'list',
+                        message: 'What Would You Like To Buy?',
+                        choices: function () {
+                            let choiceArray = [];
+                            for (var i = 0; i < results.length; i++) {
+                                choiceArray.push(results[i].product_name);
+                            }
+                            return choiceArray;
+                        },
+                        name: 'product'
+                    }]).then(function (productChoice) {
+                        inquirer.prompt([{
+                            type: 'number',
+                            message: `There are ${results[i].quantity} ${productChoice.product}s. How many of them would you like to buy?`,
+                            name: 'productQuantity'
+                        }]).then(function (productPurchased) {
+                            if (productPurchased.productQuantity < results[i].quantity){
+                                console.log(`You have purchased ${productPurchased.productQuantity} of ${productChoice.product}`);
+                            }
+                            else{
+                                console.log(`There isn't enough ${productChoice.product}s to buy that many`);
+                            }
+                                startOver();
+                        })
+                    })
+                }
+            )
         }
     })
 }
