@@ -122,14 +122,28 @@ function managerOptions() {
             }]).then(function (managerOption) {
                 let manFirstOption = managerOption.managerMenu;
                 if (manFirstOption === 'View Products For Sale') {
-                    console.log('Products for Sale');
+                    connection.query('SELECT item_id,product_name,price,quantity FROM products', function (err, results) {
+                        if(err) throw err;
+                        results.forEach(entry => {
+                            console.log(`ID: ${entry.item_id}\nProduct:${entry.product_name}\nPrice:$${entry.price} each\nQuantity:${entry.quantity}`);
+                        });
+                    })
 
                     startOver();
                 }
                 else if (manFirstOption === 'View Low Inventory Items') {
-                    console.log('Low Inventory');
+                    console.log('These Items Are Low On Inventory');
+                    connection.query('SELECT item_id,product_name,quantity FROM products',function(err,results){
+                        if(err) throw err;
+                        results.forEach(item=>{
+                            if(item.quantity<5){                     
+                                console.log(`\nID:${item.item_id}\nProduct:${item.product_name}\nQuantity:${item.quantity}`)
+                            }
+                        })
+                        startOver();
+                    })
 
-                    startOver();
+                   
                 }
                 else if (manFirstOption === 'Add Inventory') {
                     console.log('Add Inventory');
