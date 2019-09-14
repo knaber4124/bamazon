@@ -50,32 +50,54 @@ function customerOptions() {
         }
         else {
             connection.query(
-                'SELECT * FROM products', function (err, results) {
+                'SELECT item_id,product_name,price,quantity FROM products', function (err, results) {
                     if (err) throw err;
                     inquirer.prompt([{
                         type: 'list',
                         message: 'What Would You Like To Buy?',
                         choices: function () {
                             let choiceArray = [];
-                            for (var i = 0; i < results.length; i++) {
-                                choiceArray.push(results[i].product_name);
-                            }
+                            results.forEach(item => {
+                                choiceArray.push(item.product_name);
+                            });
                             return choiceArray;
                         },
                         name: 'product'
                     }]).then(function (productChoice) {
+                        var productToBuy;
+                        for (var i = 0; i < results.length; i++) {
+                            if (results[i].product_name === productChoice.product) {
+                                productToBuy = results[i];
+                            }
+                        }
                         inquirer.prompt([{
                             type: 'number',
-                            message: `There are ${results[i].quantity} ${productChoice.product}s. How many of them would you like to buy?`,
+                            message: `There are ${productToBuy.quantity} ${productChoice.product}s. They are $${productToBuy.price} each. How many of them would you like to buy?`,
                             name: 'productQuantity'
                         }]).then(function (productPurchased) {
-                            if (productPurchased.productQuantity < results[i].quantity){
-                                console.log(`You have purchased ${productPurchased.productQuantity} of ${productChoice.product}`);
+                            if (productPurchased.productQuantity < productToBuy.quantity) {
+                                let totalCharge = productPurchased.productQuantity * productToBuy.price;
+                                let newQuantity = productToBuy.quantity - productPurchased.productQuantity;
+                                console.log(`You have purchased ${productPurchased.productQuantity} ${productChoice.product}s`);
+                                console.log(`Your Total Purchase was:$${totalCharge}`)
+                                console.log(newQuantity);
+                                connection.query('UPDATE products SET ? WHERE ?', [
+                                    {
+                                        quantity: newQuantity
+                                    },
+                                    {
+                                        product_name: productChoice.product
+                                    }
+                                ],
+                                    function (err, results) {
+                                        if (err) throw err;
+                                    });
+
                             }
-                            else{
+                            else {
                                 console.log(`There isn't enough ${productChoice.product}s to buy that many`);
                             }
-                                startOver();
+                            startOver();
                         })
                     })
                 }
@@ -168,7 +190,7 @@ function start() {
     inquirer.prompt([{
         type: 'list',
         message: 'Are You A Customer, Manager, or Supervisor',
-        choices: ['Customer', 'Manager', 'Supervisor','Exit'],
+        choices: ['Customer', 'Manager', 'Supervisor', 'Exit'],
         name: 'userType'
     }]).then(function (userTypeResponse) {
         if (userTypeResponse.userType === 'Customer') {
@@ -177,10 +199,10 @@ function start() {
         else if (userTypeResponse.userType === 'Manager') {
             managerOptions();
         }
-        else if (userTypeResponse.userType==='Supervisor'){
+        else if (userTypeResponse.userType === 'Supervisor') {
             supOptions();
         }
-        else{
+        else {
             connection.end();
         }
     })
