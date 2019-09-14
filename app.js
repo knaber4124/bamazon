@@ -2,6 +2,8 @@ let inquirer = require('inquirer');
 require('dotenv').config();
 let mysql = require('mysql');
 
+let env = process.env;
+
 var connection = mysql.createConnection({
     host: "localhost",
 
@@ -19,7 +21,7 @@ connection.connect(function (err) {
     if (err) throw err;
 });
 
-let env = process.env;
+
 
 function startOver() {
     inquirer.prompt([{
@@ -166,7 +168,7 @@ function start() {
     inquirer.prompt([{
         type: 'list',
         message: 'Are You A Customer, Manager, or Supervisor',
-        choices: ['Customer', 'Manager', 'Supervisor'],
+        choices: ['Customer', 'Manager', 'Supervisor','Exit'],
         name: 'userType'
     }]).then(function (userTypeResponse) {
         if (userTypeResponse.userType === 'Customer') {
@@ -175,8 +177,11 @@ function start() {
         else if (userTypeResponse.userType === 'Manager') {
             managerOptions();
         }
-        else {
+        else if (userTypeResponse.userType==='Supervisor'){
             supOptions();
+        }
+        else{
+            connection.end();
         }
     })
 };
