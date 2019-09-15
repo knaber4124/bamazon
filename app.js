@@ -50,7 +50,7 @@ function customerOptions() {
         }
         else {
             connection.query(
-                'SELECT item_id,product_name,price,quantity FROM products', function (err, results) {
+                'SELECT item_id,product_name,price,quantity,product_sales FROM products', function (err, results) {
                     if (err) throw err;
                     inquirer.prompt([{
                         type: 'list',
@@ -78,12 +78,15 @@ function customerOptions() {
                             if (productPurchased.productQuantity < productToBuy.quantity) {
                                 let totalCharge = productPurchased.productQuantity * productToBuy.price;
                                 let newQuantity = productToBuy.quantity - productPurchased.productQuantity;
+                                let salesFigure = parseFloat(totalCharge) + parseFloat(productToBuy.product_sales);
                                 console.log(`You have purchased ${productPurchased.productQuantity} ${productChoice.product}s`);
-                                console.log(`Your Total Purchase was:$${totalCharge}`)
-                                console.log(newQuantity);
-                                connection.query('UPDATE products SET ? WHERE ?', [
+                                console.log(`Your Total Purchase was:$${totalCharge}`);
+                                connection.query('UPDATE products SET ? , ? WHERE ?', [
                                     {
                                         quantity: newQuantity
+                                    },
+                                    {
+                                        product_sales: salesFigure
                                     },
                                     {
                                         product_name: productChoice.product
@@ -220,15 +223,15 @@ function managerOptions() {
                     }]).then(function (addingProduct) {
                         console.log(`You Added ${addingProduct.productToAddQuantity} ${addingProduct.productToAdd}s to ${addingProduct.productToAddDepartment} at $${addingProduct.productToAddPrice}`);
                         connection.query('INSERT INTO products SET ?',
-                        {
-                            product_name: addingProduct.productToAdd,
-                            department_name:addingProduct.productToAddDepartment,
-                            price:addingProduct.productToAddPrice,
-                            quantity:addingProduct.productToAddQuantity
-                        },
-                        function(err,results){
-                            if(err) throw err;
-                        })
+                            {
+                                product_name: addingProduct.productToAdd,
+                                department_name: addingProduct.productToAddDepartment,
+                                price: addingProduct.productToAddPrice,
+                                quantity: addingProduct.productToAddQuantity
+                            },
+                            function (err, results) {
+                                if (err) throw err;
+                            })
                         startOver();
                     })
 
@@ -259,8 +262,37 @@ function supOptions() {
             }]).then(function (supMenuResponse) {
                 if (supMenuResponse.supMenu === 'View Products By Department') {
                     console.log('Displaying Department Information');
-
-                    startOver();
+                    connection.query(
+                        'SELECT item_id,product_name,department_name FROM products', function (err, results) {
+                            if (err) throw err
+                            inquirer.prompt([{
+                                type: 'list',
+                                message: 'Choose A Department To View',
+                                choices: function () {
+                                    let choiceArray = [];
+                                    for (let i = 0; i < results.length; i++) {
+                                        if (!choiceArray.includes(results[i].department_name)) {
+                                            choiceArray.push(results[i].department_name);
+                                        }
+                                    }
+                                    return choiceArray;
+                                },
+                                name: 'departmentOption'
+                            }]).then(function (departmentChosen) {
+                                connection.query(
+                                    'SELECT item_id,product_name,quantity,price,product_sales,department_name FROM products WHERE ?',
+                                    {
+                                        department_name: departmentChosen.departmentOption
+                                    },
+                                    function (err, results) {
+                                        if (err) throw err
+                                        results.forEach(item => {
+                                            console.log(`\nProduct:${item.product_name}|Quantity:${item.quantity}|Price:${item.price}|Total Sales:${item.product_sales}`);
+                                        });
+                                    });
+                                startOver();
+                            });
+                        })
                 }
                 else {
                     console.log('Creating New Department');
