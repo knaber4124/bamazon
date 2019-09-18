@@ -1,8 +1,8 @@
 let inquirer = require('inquirer');
 require('dotenv').config();
 let mysql = require('mysql');
-let startOver= require('./startOver.js');
-let start= require('./app');
+let startOver = require('./startOver.js');
+let start = require('./start');
 
 let env = process.env;
 
@@ -78,12 +78,12 @@ function customerOptions() {
                                     function (err, results) {
                                         if (err) throw err;
                                     });
-
+                                startOver();
                             }
                             else {
                                 console.log(`There isn't enough ${productChoice.product}s to buy that many`);
+                                startOver();
                             }
-                            startOver();
                         })
                     })
                 }
@@ -92,4 +92,4 @@ function customerOptions() {
     })
 }
 
-module.exports=customerOptions;
+module.exports = customerOptions;

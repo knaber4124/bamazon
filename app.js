@@ -1,8 +1,7 @@
 let inquirer = require('inquirer');
 require('dotenv').config();
 let mysql = require('mysql');
-let customerOptions = require('./customer.js');
-let managerOptions = require('./manager.js');
+let start = require('./start')
 
 let env = process.env;
 
@@ -24,24 +23,5 @@ connection.connect(function (err) {
 });
 
 
-function start() {
-    inquirer.prompt([{
-        type: 'list',
-        message: 'Are You A Customer or Manager',
-        choices: ['Customer', 'Manager', 'Exit'],
-        name: 'userType'
-    }]).then(function (userTypeResponse) {
-        if (userTypeResponse.userType === 'Customer') {
-            customerOptions();
-        }
-        else if (userTypeResponse.userType === 'Manager') {
-            managerOptions();
-        }
-        else {
-            connection.end();
-        }
-    })
-};
-module.exports = start;
-start();
 
+start();

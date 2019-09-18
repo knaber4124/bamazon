@@ -2,7 +2,7 @@ let inquirer = require('inquirer');
 require('dotenv').config();
 let mysql = require('mysql');
 let startOver = require('./startOver.js');
-let start = require('./app');
+let start = require('./start');
 
 
 let env = process.env;
@@ -45,9 +45,9 @@ function managerOptions() {
                         results.forEach(entry => {
                             console.log(`\nID: ${entry.item_id}\nProduct:${entry.product_name}\nPrice:$${entry.price} each\nQuantity:${entry.quantity}`);
                         });
+                        startOver();
                     })
 
-                    startOver();
                 }
                 else if (manFirstOption === 'View Low Inventory Items') {
                     console.log('These Items Are Low On Inventory');
@@ -66,7 +66,6 @@ function managerOptions() {
                     connection.query(
                         'SELECT item_id,product_name,quantity FROM products', function (err, results) {
                             if (err) throw err;
-                            console.log(results);
                             inquirer.prompt([{
                                 type: 'list',
                                 message: 'Which Item Do You Want To Buy More Inventory Of?',
@@ -157,4 +156,4 @@ function managerOptions() {
 }
 
 
-module.exports= managerOptions;
+module.exports = managerOptions;
