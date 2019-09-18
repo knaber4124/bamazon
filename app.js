@@ -27,7 +27,7 @@ connection.connect(function (err) {
 function start() {
     inquirer.prompt([{
         type: 'list',
-        message: 'Are You A Customer, Manager, or Supervisor',
+        message: 'Are You A Customer or Manager',
         choices: ['Customer', 'Manager', 'Exit'],
         name: 'userType'
     }]).then(function (userTypeResponse) {
