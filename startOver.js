@@ -1,7 +1,7 @@
 let inquirer = require('inquirer');
 require('dotenv').config();
 let mysql = require('mysql');
-let start= require('./start');
+// const start = require('./start.js');
 
 let env = process.env;
 
@@ -21,6 +21,25 @@ var connection = mysql.createConnection({
 connection.connect(function (err) {
     if (err) throw err;
 });
+function start() {
+    inquirer.prompt([{
+        type: 'list',
+        message: 'Are You A Customer or Manager',
+        choices: ['Customer', 'Manager', 'Exit'],
+        name: 'userType'
+    }]).then(function (userTypeResponse) {
+        if (userTypeResponse.userType === 'Customer') {
+            customerOptions();
+        }
+        else if (userTypeResponse.userType === 'Manager') {
+            managerOptions();
+        }
+        else {
+            connection.end();
+        }
+    })
+};
+
 
 function startOver() {
     inquirer.prompt([{
@@ -30,6 +49,8 @@ function startOver() {
     }]).then(function (customerEndReply) {
         if (customerEndReply.customerEnd == true) {
             start();
+
+
         }
         else if (customerEndReply.customerEnd == false) {
             connection.end();
@@ -39,4 +60,4 @@ function startOver() {
 
 
 
-module.exports= startOver;
+module.exports = startOver;

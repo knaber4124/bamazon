@@ -1,7 +1,7 @@
-let inquirer = require('inquirer');
 require('dotenv').config();
+
+let start = require('./start.js');
 let mysql = require('mysql');
-let start = require('./start')
 
 let env = process.env;
 

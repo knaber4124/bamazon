@@ -2,7 +2,7 @@ let inquirer = require('inquirer');
 require('dotenv').config();
 let mysql = require('mysql');
 let startOver = require('./startOver.js');
-let start = require('./start');
+
 
 let env = process.env;
 
@@ -64,6 +64,7 @@ function customerOptions() {
                                 let salesFigure = parseFloat(totalCharge) + parseFloat(productToBuy.product_sales);
                                 console.log(`You have purchased ${productPurchased.productQuantity} ${productToBuy.product_name}s`);
                                 console.log(`Your Total Purchase was:$${totalCharge}`);
+                                // startOver();
                                 connection.query('UPDATE products SET ? , ? WHERE ?', [
                                     {
                                         quantity: newQuantity
@@ -74,14 +75,14 @@ function customerOptions() {
                                     {
                                         product_name: productChoice.product
                                     }
+
                                 ],
                                     function (err, results) {
                                         if (err) throw err;
                                     });
-                                startOver();
                             }
                             else {
-                                console.log(`There isn't enough ${productChoice.product}s to buy that many`);
+                                console.log(`There isn't enough ${productToBuy.product_name}s to buy that many`);
                                 startOver();
                             }
                         })
